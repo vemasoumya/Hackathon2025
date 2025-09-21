@@ -61,12 +61,26 @@
                 {% for msg in messages %}
                     {% if msg.role == 'user' %}
                         <div class="user-message">
-                            <strong>You:</strong><br>
-                            <div class="message-content">{{ msg.content }}</div>
+                            <strong>You:</strong>
+
+                            <div class="message-content">
+                                {%- if msg.content is string -%}
+                                    {{ msg.content }}
+                                {%- elif msg.content is iterable -%}
+                                    {%- for item in msg.content -%}
+                                        {%- if item.text and item.text.value -%}
+                                            {{ item.text.value }}
+                                        {%- endif -%}
+                                    {%- endfor -%}
+                                {%- else -%}
+                                    {{ msg.content }}
+                                {%- endif -%}
+                            </div>
                         </div>
                     {% elif msg.role == 'assistant' %}
                         <div class="agent-message">
-                            <strong>AI Agent:</strong><br>
+                            <strong>AI Agent:</strong>
+
                             <div class="message-content markdown-content" id="agent-msg-{{ loop.index }}">
                                 {% if msg.text_messages %}
                                     {% for text_msg in msg.text_messages %}
@@ -87,7 +101,7 @@
                                     if (typeof marked !== 'undefined') {
                                         container.innerHTML = marked.parse(fullContent);
                                     } else {
-                                        container.innerHTML = fullContent.replace(/\n/g, '<br>');
+                                        container.innerHTML = fullContent.replace(/\n/g, '');
                                     }
                                 })();
                             </script>
@@ -101,3 +115,4 @@
     </main>
 </body>
 </html>
+ 
